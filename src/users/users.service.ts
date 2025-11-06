@@ -50,12 +50,10 @@ export class UsersService {
     }
   }
 
-  findAll() {
-    return `This action returns all users`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOneByUsername(username: string) {
+    return await this.prisma.user.findUnique({
+      where: { username },
+    });
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {

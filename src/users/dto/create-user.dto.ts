@@ -10,3 +10,11 @@ export class CreateUserDto {
   @IsNotEmpty()
   password: string;
 }
+
+export class UserResponseDto {
+  id: string;
+  username: string;
+  email: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
