@@ -38,11 +38,15 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     }
 
     response.status(status).json({
+      success: false,
       statusCode: status,
+      message:
+        typeof message === 'string'
+          ? message
+          : (message as any).message || 'An error occurred',
+      error: typeof message === 'object' ? message : undefined,
       timestamp: new Date().toISOString(),
       path: request.url,
-      method: request.method,
-      ...(typeof message === 'string' ? { message } : message),
     });
   }
 }
