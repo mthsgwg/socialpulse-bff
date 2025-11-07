@@ -2,13 +2,16 @@ import {
   Injectable,
   ConflictException,
   InternalServerErrorException,
+  UnauthorizedException,
+  NotFoundException,
 } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto, UserResponseDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { PrismaClientKnownRequestError } from 'generated/prisma/runtime/library';
+import { PrismaService } from '../prisma/prisma.service';
+import { PrismaClientKnownRequestError } from '../../generated/prisma/runtime/library';
+import { PublicUserResponseDto } from './dto/public-user-response.dto';
 
 @Injectable()
 export class UsersService {
@@ -51,16 +54,29 @@ export class UsersService {
   }
 
   async findOneByUsername(username: string) {
-    return await this.prisma.user.findUnique({
+    const user = await this.prisma.user.findUnique({
       where: { username },
     });
+
+    if (!user) throw new NotFoundException('User not found');
+
+    return {
+      username: user.username,
+      email: user.email,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
+  returnUser(user: User | null) {
+    if (!user) throw new UnauthorizedException('User is not authenticated');
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+    return {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
   }
 }
