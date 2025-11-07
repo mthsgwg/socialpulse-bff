@@ -73,12 +73,15 @@ describe('AuthController', () => {
       expect(mockAuthService.generateToken).toHaveBeenCalledWith(mockUser.id);
     });
 
-    it('should throw error when user is undefined', () => {
-      jest.spyOn(mockAuthService, 'authenticate').mockResolvedValue(undefined);
+    it('should throw error when user is undefined', async () => {
+      mockAuthService.authenticate.mockResolvedValue(undefined);
 
-      expect(controller.login(mockAuthDto)).rejects.toThrow(
+      await expect(controller.login(mockAuthDto)).rejects.toThrow(
         'Authentication failed',
       );
+
+      expect(mockAuthService.authenticate).toHaveBeenCalledWith(mockAuthDto);
+      expect(mockAuthService.generateToken).not.toHaveBeenCalled();
     });
 
     it('should throw error when authentication fails', async () => {
