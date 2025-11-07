@@ -8,10 +8,6 @@ import { sign } from 'jsonwebtoken';
 export class AuthService {
   constructor(private prisma: PrismaService) {}
 
-  private throwError(msg: string): void {
-    throw new UnauthorizedException(msg);
-  }
-
   private findUserByEmail(email: string) {
     return this.prisma.user.findUnique({
       where: { email },
@@ -22,8 +18,7 @@ export class AuthService {
     const user = await this.findUserByEmail(createAuthDto.email);
 
     if (!user) {
-      this.throwError('Invalid credentials');
-      return;
+      throw new UnauthorizedException('Invalid credentials');
     }
 
     const passwordMatches = await bcrypt.compare(
@@ -32,8 +27,7 @@ export class AuthService {
     );
 
     if (!passwordMatches) {
-      this.throwError('Invalid credentials');
-      return;
+      throw new UnauthorizedException('Invalid credentials');
     }
 
     return user;
@@ -43,7 +37,8 @@ export class AuthService {
     const payload = { sub: userId };
     const { JWT_SECRET } = process.env;
 
-    if (!JWT_SECRET) this.throwError('JWT configuration is missing');
+    if (!JWT_SECRET)
+      throw new UnauthorizedException('JWT configuration is missing');
 
     const token = sign(payload, JWT_SECRET!, {
       expiresIn: '14d',
