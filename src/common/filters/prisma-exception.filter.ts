@@ -8,6 +8,12 @@ import {
 import { PrismaClientKnownRequestError } from 'generated/prisma/runtime/library';
 import type { Response, Request } from 'express';
 
+enum PrismaErrorCodes {
+  UNIQUE_CONSTRAINT_VIOLATION = 'P2002',
+  FOREIGN_KEY_CONSTRAINT_VIOLATION = 'P2003',
+  RECORD_NOT_FOUND = 'P2005',
+}
+
 @Catch(PrismaClientKnownRequestError)
 export class PrismaExceptionFilter implements ExceptionFilter {
   private readonly logger = new Logger(PrismaExceptionFilter.name);
@@ -30,11 +36,11 @@ export class PrismaExceptionFilter implements ExceptionFilter {
 
   private mapPrismaErrorToHttp(error: PrismaClientKnownRequestError) {
     switch (error.code) {
-      case 'P2002': // Unique constraint violation
+      case PrismaErrorCodes.UNIQUE_CONSTRAINT_VIOLATION:
         return this.handleUniqueConstraintViolation(error);
-      case 'P2003': // Foreign key constraint violation
+      case PrismaErrorCodes.FOREIGN_KEY_CONSTRAINT_VIOLATION:
         return this.handleForeignKeyViolation(error);
-      case 'P2025': // Record not found
+      case PrismaErrorCodes.RECORD_NOT_FOUND:
         return this.handleRecordNotFound(error);
       default:
         return this.handleGenericError(error);
