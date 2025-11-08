@@ -14,8 +14,8 @@ async function bootstrap() {
   app.useGlobalInterceptors(new ResponseInterceptor());
 
   app.useGlobalFilters(
-    new PrismaExceptionFilter(),
     new GlobalExceptionFilter(),
+    new PrismaExceptionFilter(),
   );
 
   await app.listen(process.env.PORT ?? 3443);
