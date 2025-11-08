@@ -31,13 +31,13 @@ model Follower {
   id        String   @id @unique @default(cuid())
   createdAt DateTime @default(now())
 
-  follower   User   @relation("UserFollowing", fields: [followerId], references: [id], onDelete: Cascade)
-  followerId String
+  follower   User   @relation("UserFollowing", fields: [followerUsername], references: [username], onDelete: Cascade)
+  followerUsername String
 
-  following   User   @relation("UserFollowers", fields: [followingId], references: [id], onDelete: Cascade)
-  followingId String
+  following   User   @relation("UserFollowers", fields: [followingUsername], references: [username], onDelete: Cascade)
+  followingUsername String
 
-  @@unique([followerId, followingId])
+  @@unique([followerUsername, followingUsername])
   @@map("followers")
 }
 
