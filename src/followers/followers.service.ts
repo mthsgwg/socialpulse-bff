@@ -8,7 +8,7 @@ import {
 import { Prisma, User } from 'generated/prisma';
 import { CreateFollowerDto } from './dto/create-follower.dto';
 import { PublicUserResponseDto } from 'src/users/dto/public-user-response.dto';
-import { PublicUser } from 'src/common/filters/user-to-public-user-response.filter';
+import { PublicUser } from '../common/filters/user-to-public-user-response.filter';
 
 @Injectable()
 export class FollowersService {
@@ -65,7 +65,7 @@ export class FollowersService {
     }
   }
 
-  async findMyFollowers(user: User) {
+  async findMyFollowers(user: User): Promise<PublicUserResponseDto[]> {
     try {
       const results = await this.prismaService.follower.findMany({
         where: {

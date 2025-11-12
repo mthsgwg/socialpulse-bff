@@ -12,6 +12,7 @@ import {
 import { FollowersService } from './followers.service';
 import { Prisma, User } from 'generated/prisma';
 import { CreateFollowerDto } from './dto/create-follower.dto';
+import { PublicUserResponseDto } from 'src/users/dto/public-user-response.dto';
 
 @Controller('followers')
 export class FollowersController {
@@ -30,13 +31,21 @@ export class FollowersController {
   }
 
   @Delete('unfollow/:username')
-  removeFollow(@Param('username') usernameToBeUnfollowed: string, @Req() req) {
+  removeFollow(
+    @Param('username') usernameToBeUnfollowed: string,
+    @Req() req,
+  ): Promise<{
+    id: string;
+    createdAt: Date;
+    followingUsername: string;
+    followerUsername: string;
+  }> {
     const user = this.checkIfUserExists(req?.user);
     return this.followersService.unfollow(usernameToBeUnfollowed, user);
   }
 
   @Get('my-followers')
-  findFollowers(@Req() req) {
+  findFollowers(@Req() req): Promise<PublicUserResponseDto[]> {
     const user = this.checkIfUserExists(req?.user);
     return this.followersService.findMyFollowers(user);
   }
